@@ -1,46 +1,51 @@
+from matplotlib import pyplot as plt
 class Integrate:
-	def solve(self,order,coeff,method):
+	def solve(self,order,coeffs,method):
 		def f(x):
-			s=0
+			sum=0
 			for i in range(order+1):
-				s=s+(coeff[i]*(x**(order-i)))
-			return s
+				sum+=(coeffs[i]*(x**(order-i)))
+			return sum
 		if method=='trapezoid':
-			a=float(input('Lower limit: '))
-			b=float(input('Upper limit: '))
+			a=float(input('enter the lower limit of interval: '))
+			b=float(input('enter the upper limit of interval: '))
 			n=int((b-a)/0.001)
 			x_values=[a]
 			for i in range(1,n):
 				x_values.append(float(str(x_values[0]+(0.001*i))[:5]))
 			x_values.append(b)
-			def trapezoid_sol(f,x_values,n):
-				s=0
+                        y_values=[f(x) for x in x_values]
+                        a=plt.plot(x_values,y_values);
+                        for j in range(1,n+1):
+                                points=[[x_values[j-1],0],[x_values[j-1],y_values[j-1]],[x_values[j],y_values[j]],[x_values[j],0]]
+                                polygon=plt.Polygon(points,closed=True,fill=None,edgecolor='r')
+                                a=plt.gca().add_patch(polygon)
+                        def trapezoid_solution(f,x_values,n):
+				sum=0
 				for i in range(1,n):
-					s=s+f(x_values[i])
-				s=s*2
-				s=s+(f(x_values[0])+f(x_values[n]))
-				ans=((x_values[n]-x_values[0])*s)/(2*n)
+					sum+=f(x_values[i])
+				sum*=2
+				sum+=(f(x_values[0])+f(x_values[n]))
+				ans=((x_values[n]-x_values[0])*sum)/(2*n)
 				return ans
-			return trapezoid_sol(f,x_values,n)
+			return trapezoid_solution(f,x_values,n)
 		elif method=='simpson':
-			a=float(input('Lower limit: '))
-			b=float(input('Upper limit: '))
-			n=int((b-a)/0.0005)
+			a=float(input('enter the lower limit of interval: '))
+			b=float(input('enter the upper limit of interval: '))
+			n=int((b-a)/0.0005) #0.0005 instead of 0.001 to ensure n is even
 			x_values=[a]
 			for i in range(1,n):
-				x_values.append(float(str(x_values[0]+(0.0005*i)[:5]))
+				x_values.append(float(str(x_values[0]+(0.0005*i))[:5]))
 			x_values.append(b)
-			def simpson_sol(f,x_values,n):
-				s1=0
-				s2=0
-				s3=0
+			def simpson_solution(f,x_values,n):
+				sum1,sum2,sum=0,0,0
 				for i in range(1,n,2):
-					s1+=f(x_values[i])
-				s1*=4
+					sum1+=f(x_values[i])
+				sum1*=4
 				for i in range(2,n,2):
-					s2+=f(x_values[i])
-				s2*=2
-				s=s+(f(x_values[0])+f(x_values[n])+s1+s2)
-				ans=((x_values[n]-x_values[0])*s)/(3*n)
+					sum2+=f(x_values[i])
+				sum2*=2
+				sum+=(f(x_values[0])+f(x_values[n])+sum1+sum2)
+				ans=((x_values[n]-x_values[0])*sum)/(3*n)
 				return ans
-			return simpson_sol(f,x_values,n)
+			return simpson_solution(f,x_values,n)
